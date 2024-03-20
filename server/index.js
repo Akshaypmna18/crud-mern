@@ -22,5 +22,19 @@ mongoose
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Middleware to allow CORS
+app.use((req, res, next) => {
+  res.header(
+    "Access-Control-Allow-Origin",
+    "http://localhost:3000",
+    "https://aks-crud-mern.vercel.app"
+  ); // Replace with the appropriate origin
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+
 // routes
 app.use("/products", ProductRoutes);
