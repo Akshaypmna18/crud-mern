@@ -24,11 +24,14 @@ app.use(express.urlencoded({ extended: false }));
 
 // Middleware to allow CORS
 app.use((req, res, next) => {
-  res.header(
-    "Access-Control-Allow-Origin",
+  const allowedOrigins = [
     "http://localhost:3000",
-    "https://aks-crud-mern.vercel.app"
-  ); // Replace with the appropriate origin
+    "https://aks-crud-mern.vercel.app",
+  ];
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
