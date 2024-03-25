@@ -1,16 +1,28 @@
 import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
 import Image from "next/image";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { commonAPI } from "@/lib/services";
+import { useContext } from "react";
+import { Context } from "@/context";
 
 export default function ProductCard({
   name,
   quantity = "0",
   price = "0",
   img,
+  id,
 }) {
+  const refetchProducts = useContext(Context);
+  const handleDelete = async (id) => {
+    try {
+      await commonAPI(`/${id}`, "DELETE", id);
+      refetchProducts();
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
   return (
-    <CardContainer className="p-8">
+    <CardContainer>
       <CardBody className="bg-secondary relative group/card border w-auto max-w-[20rem] h-auto rounded-xl pb-6 px-4">
         <CardItem translateZ="20" className="w-full mt-4">
           <Image
@@ -59,6 +71,7 @@ export default function ProductCard({
             translateZ={10}
             as={Button}
             className="bg-red-900/90 hover:bg-red-900"
+            onClick={() => handleDelete(id)}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

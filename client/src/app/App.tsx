@@ -1,16 +1,38 @@
 "use client";
 
 import ProductCard from "@/components/ProductCard";
+import { commonAPI } from "@/lib/services";
+import { useEffect, useState } from "react";
+import { Context } from "@/context";
 
 export default function Home() {
+  const [products, setProducts] = useState([]);
+  const fetchProducts = async () => {
+    const response = await commonAPI();
+    setProducts(response.data);
+  };
+  const refetchProducts = () => fetchProducts();
+  useEffect(() => {
+    fetchProducts();
+  }, []);
   return (
-    <>
-      <ProductCard
-        name="akshay"
-        // price="0"
-        // quantity="0"
-        img="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2560&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-      />
-    </>
+    <Context.Provider value={refetchProducts}>
+      <section className="p-8 flex flex-wrap gap-4 justify-center items-center">
+        {products.map(({ _id, name, price, quantity }) => {
+          return (
+            <ProductCard
+              key={_id}
+              id={_id}
+              name={name}
+              price={price}
+              quantity={quantity}
+              img={
+                "https://images.unsplash.com/photo-1682687220989-cbbd30be37e9?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              }
+            />
+          );
+        })}
+      </section>
+    </Context.Provider>
   );
 }
