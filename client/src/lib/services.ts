@@ -25,4 +25,4 @@ export const commonAPI = async (
       return response;
   }
 };
-commonAPI("", "POST", { name: "bh" });
+// commonAPI("", "POST", { name: "bh" });

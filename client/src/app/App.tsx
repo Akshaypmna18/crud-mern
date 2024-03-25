@@ -4,6 +4,7 @@ import ProductCard from "@/components/ProductCard";
 import { commonAPI } from "@/lib/services";
 import { useEffect, useState } from "react";
 import { Context } from "@/context";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -17,6 +18,7 @@ export default function Home() {
   }, []);
   return (
     <Context.Provider value={refetchProducts}>
+      <Toaster />
       <section className="p-8 flex flex-wrap gap-4 justify-center items-center">
         {products.map(({ _id, name, price, quantity }) => {
           return (
