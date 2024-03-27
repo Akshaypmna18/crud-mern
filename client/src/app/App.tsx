@@ -5,9 +5,12 @@ import { commonAPI } from "@/lib/services";
 import { useEffect, useState } from "react";
 import { Context } from "@/context";
 import { Toaster } from "@/components/ui/toaster";
+import DialogModal from "@/components/DialogModal";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [currentProduct, setCurrentProduct] = useState({});
   const fetchProducts = async () => {
     const response = await commonAPI();
     setProducts(response.data);
@@ -17,7 +20,9 @@ export default function Home() {
     fetchProducts();
   }, []);
   return (
-    <Context.Provider value={refetchProducts}>
+    <Context.Provider
+      value={{ refetchProducts, setIsOpen, setCurrentProduct, currentProduct }}
+    >
       <Toaster />
       <section className="p-8 flex flex-wrap gap-4 justify-center items-center">
         {products.map(({ _id, name, price, quantity }) => {
@@ -34,6 +39,7 @@ export default function Home() {
             />
           );
         })}
+        <DialogModal open={isOpen} setIsOpen={setIsOpen} />
       </section>
     </Context.Provider>
   );
