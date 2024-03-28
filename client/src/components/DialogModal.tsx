@@ -1,6 +1,6 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Context } from "@/context";
-import { SetStateAction, useContext } from "react";
+import { Dispatch, SetStateAction, useContext } from "react";
 import { useForm } from "react-hook-form";
 import {
   Form,
