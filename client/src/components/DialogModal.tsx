@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 
 export type ModalProps = {
   open: boolean;
-  setIsOpen: SetStateAction<boolean>;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
 };
 
 export default function DialogModal({ open, setIsOpen }: ModalProps) {
