@@ -6,7 +6,7 @@ export const commonAPI = async (
   endpoint: string = "",
   reqType: RequestType = "GET",
   params: Params = {}
-) => {
+): Promise<{ data: any }> => {
   let response = "";
   const url = `${API_URL}/${endpoint}`;
 

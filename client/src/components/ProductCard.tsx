@@ -18,7 +18,7 @@ export default function ProductCard({
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingEd, setIsLoadingEd] = useState(false);
   const { refetchProducts, setIsOpen, setCurrentProduct } = useContext(Context);
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: string) => {
     try {
       setIsLoading(true);
       await commonAPI(`/${id}`, "DELETE", id);
@@ -34,7 +34,7 @@ export default function ProductCard({
       setIsLoading(false);
     }
   };
-  const handleEdit = async (id) => {
+  const handleEdit = async (id: string) => {
     try {
       setIsLoadingEd(true);
       const response = await commonAPI(`${id}`);
