@@ -13,6 +13,12 @@ export default function ProductCard({
   price = "0",
   img,
   id,
+}: {
+  name: string;
+  quantity: string;
+  price: string;
+  img: string;
+  id: string;
 }) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
