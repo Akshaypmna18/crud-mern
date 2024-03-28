@@ -38,7 +38,7 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
         duration: 2500,
       });
       refetchProducts();
-    } catch (err) {
+    } catch (err: any) {
       console.log(err.message);
     } finally {
       setIsLoading(false);

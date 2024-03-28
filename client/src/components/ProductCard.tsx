@@ -28,7 +28,7 @@ export default function ProductCard({
         duration: 2500,
       });
       refetchProducts();
-    } catch (err) {
+    } catch (err: any) {
       console.log(err.message);
     } finally {
       setIsLoading(false);
@@ -40,7 +40,7 @@ export default function ProductCard({
       const response = await commonAPI(`${id}`);
       setCurrentProduct(response.data);
       setIsOpen(true);
-    } catch (err) {
+    } catch (err: any) {
       console.log(err.message);
     } finally {
       setIsLoadingEd(false);
