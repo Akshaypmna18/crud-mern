@@ -15,9 +15,10 @@ import { useToast } from "@/components/ui/use-toast";
 import { Loader } from "./Loader";
 import { useState } from "react";
 import { useContext } from "react";
+import { ModalProps } from "./DialogModal";
 import { Context } from "@/context";
 
-export default function DialogModal({ open, setIsOpen }) {
+export default function DialogModal({ open, setIsOpen }: ModalProps) {
   const { refetchProducts } = useContext(Context);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();

@@ -1,6 +1,6 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Context } from "@/context";
-import { useContext } from "react";
+import { SetStateAction, useContext } from "react";
 import { useForm } from "react-hook-form";
 import {
   Form,
@@ -13,7 +13,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-export default function DialogModal({ open, setIsOpen }) {
+export type ModalProps = {
+  open: boolean;
+  setIsOpen: SetStateAction<boolean>;
+};
+
+export default function DialogModal({ open, setIsOpen }: ModalProps) {
   const { currentProduct } = useContext(Context);
   // const defaultValues = {
   //   name: currentProduct.name,
