@@ -15,12 +15,15 @@ import { Button } from "@/components/ui/button";
 
 export default function DialogModal({ open, setIsOpen }) {
   const { currentProduct } = useContext(Context);
-  const defaultValues = {
-    name: currentProduct.name,
-    price: currentProduct.price,
-    quantity: currentProduct.quantity,
-  };
-  const form = useForm({ defaultValues, mode: "onChange" });
+  // const defaultValues = {
+  //   name: currentProduct.name,
+  //   price: currentProduct.price,
+  //   quantity: currentProduct.quantity,
+  // };
+  const form = useForm({
+    // defaultValues,
+    mode: "onChange",
+  });
   return (
     <Dialog
       open={open}
@@ -53,6 +56,7 @@ export default function DialogModal({ open, setIsOpen }) {
                     <Input
                       type="text"
                       placeholder="Enter Product Name"
+                      defaultValue={currentProduct.name}
                       {...field}
                     />
                   </FormControl>
@@ -75,6 +79,7 @@ export default function DialogModal({ open, setIsOpen }) {
                     <Input
                       type="text"
                       placeholder="Enter Product Price"
+                      defaultValue={currentProduct.price}
                       {...field}
                     />
                   </FormControl>
@@ -97,6 +102,7 @@ export default function DialogModal({ open, setIsOpen }) {
                     <Input
                       type="text"
                       placeholder="Enter Product Quantity"
+                      defaultValue={currentProduct.quantity}
                       {...field}
                     />
                   </FormControl>
