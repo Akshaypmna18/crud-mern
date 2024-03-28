@@ -18,11 +18,17 @@ import { useContext } from "react";
 import { ModalProps } from "./DialogModal";
 import { Context } from "@/context";
 
+type FormValues = {
+  name: string;
+  price: string;
+  quantity: string;
+};
+
 export default function DialogModal({ open, setIsOpen }: ModalProps) {
   const { refetchProducts } = useContext(Context);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const addProduct = async (data) => {
+  const addProduct = async (data: FormValues) => {
     try {
       setIsLoading(true);
       await commonAPI("", "POST", data);
