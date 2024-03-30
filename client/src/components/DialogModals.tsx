@@ -18,17 +18,17 @@ import { useContext } from "react";
 import { ModalProps } from "./DialogModal";
 import { Context } from "@/context";
 
-type FormValues = {
-  name: string;
-  price: string;
-  quantity: string;
-};
+// type FormValues = {
+//   name: string;
+//   price: string;
+//   quantity: string;
+// };
 
 export default function DialogModal({ open, setIsOpen }: ModalProps) {
   const { refetchProducts } = useContext(Context);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const addProduct = async (data: FormValues) => {
+  const addProduct = async (data: any) => {
     try {
       setIsLoading(true);
       await commonAPI("", "POST", data);
@@ -39,7 +39,12 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
       });
       refetchProducts();
     } catch (err: any) {
-      console.log(err.message);
+      toast({
+        variant: "destructive",
+        title: "Ohoh Something went wrong",
+        description: err.message,
+        duration: 2500,
+      });
     } finally {
       setIsLoading(false);
       setIsOpen(false);
@@ -50,6 +55,7 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
     name: "",
     price: "",
     quantity: "",
+    image: "",
   };
   const form = useForm({ defaultValues, mode: "onChange" });
   return (
@@ -84,6 +90,22 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="image"
+              rules={{
+                required: { value: true, message: "This is required*" },
+              }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-semibold">
+                    <big>Image</big>
+                  </FormLabel>
+                  <FormControl></FormControl>
                   <FormMessage />
                 </FormItem>
               )}
