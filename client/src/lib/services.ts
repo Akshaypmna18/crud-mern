@@ -8,16 +8,18 @@ export const commonAPI = async (
   params: Params = {}
 ) => {
   const url = `${API_URL}/${endpoint}`;
+  const config = {
+    timeout: 5000,
+  };
 
   switch (reqType) {
     case "POST":
-      return await axios.post(url, params);
+      return await axios.post(url, params, config);
     case "PUT":
-      return await axios.put(url, params);
+      return await axios.put(url, params, config);
     case "DELETE":
-      return await axios.delete(url);
+      return await axios.delete(url, config);
     default:
-      return await axios.get(url);
+      return await axios.get(url, config);
   }
 };
-// commonAPI("", "POST", { name: "hb" });

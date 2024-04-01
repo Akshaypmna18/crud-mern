@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import DialogModal from "@/components/DialogModal";
 import DialogModals from "@/components/DialogModals";
 import AddProduct from "@/components/AddProduct";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -15,9 +16,19 @@ export default function Home() {
   const [isOpens, setIsOpens] = useState(false);
   const [currentProduct, setCurrentProduct] = useState({});
   const [image, setImage] = useState();
+  const { toast } = useToast();
   const fetchProducts = async () => {
-    const response = await commonAPI();
-    setProducts(response.data);
+    try {
+      const response = await commonAPI();
+      setProducts(response.data);
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "Ohoh Something went wrong",
+        description: err.message,
+        duration: 2500,
+      });
+    }
   };
   const refetchProducts = () => fetchProducts();
   useEffect(() => {
