@@ -14,6 +14,7 @@ export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpens, setIsOpens] = useState(false);
   const [currentProduct, setCurrentProduct] = useState({});
+  const [image, setImage] = useState();
   const fetchProducts = async () => {
     const response = await commonAPI();
     setProducts(response.data);
@@ -30,12 +31,14 @@ export default function Home() {
         setCurrentProduct,
         currentProduct,
         setIsOpens,
+        setImage,
+        image,
       }}
     >
       <Toaster />
       <AddProduct />
       <section className="p-8 flex flex-wrap gap-4 justify-center items-center">
-        {products.map(({ _id, name, price, quantity }) => {
+        {products.map(({ _id, name, price, quantity, image }) => {
           return (
             <ProductCard
               key={_id}
@@ -44,6 +47,7 @@ export default function Home() {
               price={price}
               quantity={quantity}
               img={
+                image ||
                 "https://images.unsplash.com/photo-1682687220989-cbbd30be37e9?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               }
             />

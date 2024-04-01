@@ -93,25 +93,6 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
             />
             <FormField
               control={form.control}
-              name="image"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="font-semibold">
-                    <big>Image</big>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      placeholder="Enter Product Price"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name="price"
               render={({ field }) => (
                 <FormItem>
@@ -146,6 +127,19 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="image"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-semibold">
+                    <big>Image</big>
+                  </FormLabel>
+                  <FormControl></FormControl>
                   <FormMessage />
                 </FormItem>
               )}

@@ -17,6 +17,7 @@ import { useState } from "react";
 import { useContext } from "react";
 import { ModalProps } from "./DialogModal";
 import { Context } from "@/context";
+import ImageUpload from "./ImageUpload";
 
 // type FormValues = {
 //   name: string;
@@ -25,13 +26,14 @@ import { Context } from "@/context";
 // };
 
 export default function DialogModal({ open, setIsOpen }: ModalProps) {
-  const { refetchProducts } = useContext(Context);
+  const { refetchProducts, image } = useContext(Context);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const addProduct = async (data: any) => {
     try {
+      const validData = { ...data, image: image[0]?.cdnUrl };
       setIsLoading(true);
-      await commonAPI("", "POST", data);
+      await commonAPI("", "POST", validData);
       toast({
         variant: "success",
         title: "Product Added Successfully",
@@ -96,22 +98,6 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
             />
             <FormField
               control={form.control}
-              name="image"
-              rules={{
-                required: { value: true, message: "This is required*" },
-              }}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="font-semibold">
-                    <big>Image</big>
-                  </FormLabel>
-                  <FormControl></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name="price"
               rules={{
                 required: { value: true, message: "This is required*" },
@@ -149,6 +135,21 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
                       placeholder="Enter Product Quantity"
                       {...field}
                     />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="image"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-semibold">
+                    <big>Image</big>
+                  </FormLabel>
+                  <FormControl>
+                    <ImageUpload />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
