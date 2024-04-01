@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { commonAPI } from "@/lib/services";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader } from "./Loader";
+import ImageUpload from "./ImageUpload";
 
 export type ModalProps = {
   open: boolean;
@@ -22,7 +23,8 @@ export type ModalProps = {
 };
 
 export default function DialogModal({ open, setIsOpen }: ModalProps) {
-  const { currentProduct, refetchProducts } = useContext(Context);
+  const { currentProduct, refetchProducts, image, setImage } =
+    useContext(Context);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const form = useForm({
@@ -32,12 +34,12 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
     try {
       const validData = {
         name: data.name || currentProduct.name,
-        image: data.image || currentProduct.image,
+        image: image?.[0]?.cdnUrl || currentProduct.image,
         price: data.price || currentProduct.price,
         quantity: data.quantity || currentProduct.quantity,
       };
       setIsLoading(true);
-      await commonAPI(currentProduct.id, "POST", validData);
+      await commonAPI(currentProduct._id, "PUT", validData);
       toast({
         variant: "success",
         title: "Product Added Successfully",
@@ -55,6 +57,7 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
       setIsLoading(false);
       setIsOpen(false);
       form.reset();
+      setImage(undefined);
     }
   };
   return (
@@ -139,7 +142,9 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
                   <FormLabel className="font-semibold">
                     <big>Image</big>
                   </FormLabel>
-                  <FormControl></FormControl>
+                  <FormControl>
+                    <ImageUpload />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

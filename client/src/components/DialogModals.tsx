@@ -19,19 +19,19 @@ import { ModalProps } from "./DialogModal";
 import { Context } from "@/context";
 import ImageUpload from "./ImageUpload";
 
-// type FormValues = {
-//   name: string;
-//   price: string;
-//   quantity: string;
-// };
-
 export default function DialogModal({ open, setIsOpen }: ModalProps) {
-  const { refetchProducts, image } = useContext(Context);
+  const { refetchProducts, image, setImage } = useContext(Context);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const addProduct = async (data: any) => {
     try {
-      const validData = { ...data, image: image[0]?.cdnUrl };
+      const imageUrl =
+        image?.[0]?.cdnUrl ||
+        "https://media.cheggcdn.com/media/8f8/8f8d8ae8-36b5-447e-947c-076618279a3d/php1KnYTm";
+      const validData = {
+        ...data,
+        image: imageUrl,
+      };
       setIsLoading(true);
       await commonAPI("", "POST", validData);
       toast({
@@ -51,6 +51,7 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
       setIsLoading(false);
       setIsOpen(false);
       form.reset();
+      setImage(undefined);
     }
   };
   const defaultValues = {

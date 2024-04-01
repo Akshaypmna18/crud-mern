@@ -48,7 +48,7 @@ export default function Home() {
               quantity={quantity}
               img={
                 image ||
-                "https://images.unsplash.com/photo-1682687220989-cbbd30be37e9?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                "https://media.cheggcdn.com/media/8f8/8f8d8ae8-36b5-447e-947c-076618279a3d/php1KnYTm"
               }
             />
           );

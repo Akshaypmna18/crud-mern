@@ -7,22 +7,17 @@ export const commonAPI = async (
   reqType: RequestType = "GET",
   params: Params = {}
 ) => {
-  let response;
   const url = `${API_URL}/${endpoint}`;
 
   switch (reqType) {
     case "POST":
-      response = await axios.post(url, params);
-      return response;
+      return await axios.post(url, params);
     case "PUT":
-      response = await axios.put(url, params);
-      return response;
+      return await axios.put(url, params);
     case "DELETE":
-      response = await axios.delete(url);
-      return response;
+      return await axios.delete(url);
     default:
-      response = await axios.get(url);
-      return response;
+      return await axios.get(url);
   }
 };
 // commonAPI("", "POST", { name: "hb" });
