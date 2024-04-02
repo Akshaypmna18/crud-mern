@@ -13,11 +13,11 @@ import { Button } from "@/components/ui/button";
 import { commonAPI } from "@/lib/services";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader } from "./Loader";
-import { useState } from "react";
-import { useContext } from "react";
-import { ModalProps } from "./DialogModal";
+import { useContext, useEffect, useState } from "react";
+import { ModalProps, updateSchema as addSchema } from "./DialogModal";
 import { Context } from "@/context";
 import ImageUpload from "./ImageUpload";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function DialogModal({ open, setIsOpen }: ModalProps) {
   const { refetchProducts, image, setImage } = useContext(Context);
@@ -25,15 +25,8 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
   const { toast } = useToast();
   const addProduct = async (data: any) => {
     try {
-      const imageUrl =
-        image?.[0]?.cdnUrl ||
-        "https://media.cheggcdn.com/media/8f8/8f8d8ae8-36b5-447e-947c-076618279a3d/php1KnYTm";
-      const validData = {
-        ...data,
-        image: imageUrl,
-      };
       setIsLoading(true);
-      await commonAPI("", "POST", validData);
+      await commonAPI("", "POST", data);
       toast({
         variant: "success",
         title: "Product Added Successfully",
@@ -60,16 +53,25 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
     quantity: "",
     image: "",
   };
-  const form = useForm({ defaultValues, mode: "onChange" });
+  const form = useForm({
+    defaultValues,
+    resolver: zodResolver(addSchema),
+    mode: "onChange",
+  });
+  const imageUrl = form.watch("image");
+  useEffect(() => {
+    form.setValue("image", image?.[0]?.cdnUrl);
+  }, [image?.[0]?.cdnUrl]);
   return (
     <Dialog
       open={open}
       onOpenChange={() => {
         setIsOpen(!open);
         form.reset();
+        setImage(undefined);
       }}
     >
-      <DialogContent>
+      <DialogContent onInteractOutside={(e) => e.preventDefault()}>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(addProduct)}
@@ -78,9 +80,6 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
             <FormField
               control={form.control}
               name="name"
-              rules={{
-                required: { value: true, message: "This is required*" },
-              }}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="font-semibold">
@@ -100,9 +99,6 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
             <FormField
               control={form.control}
               name="price"
-              rules={{
-                required: { value: true, message: "This is required*" },
-              }}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
@@ -122,9 +118,6 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
             <FormField
               control={form.control}
               name="quantity"
-              rules={{
-                required: { value: true, message: "This is required*" },
-              }}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="font-semibold">
@@ -150,13 +143,24 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
                     <big>Image</big>
                   </FormLabel>
                   <FormControl>
-                    <ImageUpload />
+                    <>
+                      <ImageUpload />
+                      <Input
+                        type="url"
+                        className="opacity-0 w-0 h-0 m-0 p-0"
+                        {...field}
+                      />
+                    </>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button className="w-full" type="submit">
+            <Button
+              disabled={imageUrl ? false : true}
+              className="w-full"
+              type="submit"
+            >
               {isLoading ? <Loader /> : "Add"}
             </Button>
           </form>

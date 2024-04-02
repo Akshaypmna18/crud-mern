@@ -93,6 +93,12 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
   useEffect(() => {
     form.setValue("image", image?.[0]?.cdnUrl);
   }, [image?.[0]?.cdnUrl]);
+  useEffect(() => {
+    form.setValue("name", currentProduct.name);
+    form.setValue("image", currentProduct.image);
+    form.setValue("price", currentProduct.price);
+    form.setValue("quantity", currentProduct.quantity);
+  }, [currentProduct]);
   return (
     <Dialog
       open={open}
@@ -123,7 +129,7 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
                     <Input
                       type="text"
                       placeholder="Enter Product Name"
-                      defaultValue={currentProduct.name}
+                      // defaultValue={currentProduct.name}
                       {...field}
                     />
                   </FormControl>
@@ -141,9 +147,9 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
                   </FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
+                      type="text"
                       placeholder="Enter Product Price"
-                      defaultValue={currentProduct.price}
+                      // defaultValue={currentProduct.price}
                       {...field}
                     />
                   </FormControl>
@@ -163,7 +169,7 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
                     <Input
                       type="text"
                       placeholder="Enter Product Quantity"
-                      defaultValue={currentProduct.quantity}
+                      // defaultValue={currentProduct.quantity}
                       {...field}
                     />
                   </FormControl>
