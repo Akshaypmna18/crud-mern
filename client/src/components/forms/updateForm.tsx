@@ -1,4 +1,14 @@
+"use client";
+
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Context } from "@/context";
+import {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useState,
+  useEffect,
+} from "react";
 import { useForm } from "react-hook-form";
 import {
   Form,
@@ -12,24 +22,62 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { commonAPI } from "@/lib/services";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader } from "./Loader";
-import { useContext, useEffect, useState } from "react";
-import { ModalProps, updateSchema as addSchema } from "./DialogModal";
-import { Context } from "@/context";
-import ImageUpload from "./ImageUpload";
+import { Loader } from "@/components/Loader";
+import ImageUpload from "@/components/ImageUpload";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
-export default function DialogModal({ open, setIsOpen }: ModalProps) {
-  const { refetchProducts, image, setImage } = useContext(Context);
+export type ModalProps = {
+  open: boolean;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+};
+
+export const updateSchema = z.object({
+  name: z
+    .string()
+    .min(3, "Name must be at least 3 characters long")
+    .max(50, "Name cannot exceed 50 characters"),
+  price: z.coerce
+    .number({
+      required_error: "Price is required",
+      invalid_type_error: "Price must be a number",
+    })
+    .gte(0, "Price must be greater than or equal to 0"),
+  quantity: z.coerce
+    .number({
+      required_error: "Quantity is required",
+      invalid_type_error: "Quantity must be a number",
+    })
+    .gte(0, "Quantity must be greater than or equal to 0"),
+  image: z
+    .string({
+      required_error: "URL is required",
+    })
+    .url("Image must be a valid URL"),
+});
+
+export default function UpdateForm({ open, setIsOpen }: ModalProps) {
+  const { currentProduct, refetchProducts, image, setImage } =
+    useContext(Context);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const addProduct = async (data: any) => {
+  const form = useForm({
+    mode: "onChange",
+    resolver: zodResolver(updateSchema),
+  });
+  const updateProduct = async (data: any) => {
     try {
+      const validData = {
+        name: data.name || currentProduct.name,
+        image: data.image || currentProduct.image,
+        price: data.price || currentProduct.price,
+        quantity: data.quantity || currentProduct.quantity,
+      };
       setIsLoading(true);
-      await commonAPI("", "POST", data);
+      await commonAPI(currentProduct._id, "PUT", validData);
       toast({
         variant: "success",
-        title: "Product Added Successfully",
+        title: "Product Updated Successfully",
         duration: 2500,
       });
       refetchProducts();
@@ -47,21 +95,15 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
       setImage(undefined);
     }
   };
-  const defaultValues = {
-    name: "",
-    price: "",
-    quantity: "",
-    image: "",
-  };
-  const form = useForm({
-    defaultValues,
-    resolver: zodResolver(addSchema),
-    mode: "onChange",
-  });
-  const imageUrl = form.watch("image");
   useEffect(() => {
     form.setValue("image", image?.[0]?.cdnUrl);
   }, [image?.[0]?.cdnUrl]);
+  useEffect(() => {
+    form.setValue("name", currentProduct.name);
+    form.setValue("image", currentProduct.image);
+    form.setValue("price", currentProduct.price);
+    form.setValue("quantity", currentProduct.quantity);
+  }, [currentProduct]);
   return (
     <Dialog
       open={open}
@@ -71,10 +113,13 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
         setImage(undefined);
       }}
     >
-      <DialogContent onInteractOutside={(e) => e.preventDefault()}>
+      <DialogContent
+        onInteractOutside={(e) => e.preventDefault()}
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(addProduct)}
+            onSubmit={form.handleSubmit(updateProduct)}
             className="space-y-4 mt-6"
           >
             <FormField
@@ -89,6 +134,7 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
                     <Input
                       type="text"
                       placeholder="Enter Product Name"
+                      // defaultValue={currentProduct.name}
                       {...field}
                     />
                   </FormControl>
@@ -108,6 +154,7 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
                     <Input
                       type="text"
                       placeholder="Enter Product Price"
+                      // defaultValue={currentProduct.price}
                       {...field}
                     />
                   </FormControl>
@@ -127,6 +174,7 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
                     <Input
                       type="text"
                       placeholder="Enter Product Quantity"
+                      // defaultValue={currentProduct.quantity}
                       {...field}
                     />
                   </FormControl>
@@ -143,25 +191,14 @@ export default function DialogModal({ open, setIsOpen }: ModalProps) {
                     <big>Image</big>
                   </FormLabel>
                   <FormControl>
-                    <>
-                      <ImageUpload />
-                      <Input
-                        type="url"
-                        className="opacity-0 w-0 h-0 m-0 p-0"
-                        {...field}
-                      />
-                    </>
+                    <ImageUpload />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button
-              disabled={imageUrl ? false : true}
-              className="w-full"
-              type="submit"
-            >
-              {isLoading ? <Loader /> : "Add"}
+            <Button className="w-full" type="submit">
+              {isLoading ? <Loader /> : "Update"}
             </Button>
           </form>
         </Form>

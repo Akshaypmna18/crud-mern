@@ -5,8 +5,8 @@ import { commonAPI } from "@/lib/services";
 import { useEffect, useState } from "react";
 import { Context } from "@/context";
 import { Toaster } from "@/components/ui/toaster";
-import DialogModal from "@/components/DialogModal";
-import DialogModals from "@/components/DialogModals";
+import UpdateForm from "@/components/forms/updateForm";
+import AddForm from "@/components/forms/addForm";
 import AddProduct from "@/components/AddProduct";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -64,8 +64,8 @@ export default function Home() {
             />
           );
         })}
-        <DialogModal open={isOpen} setIsOpen={setIsOpen} />
-        <DialogModals open={isOpens} setIsOpen={setIsOpens} />
+        <UpdateForm open={isOpen} setIsOpen={setIsOpen} />
+        <AddForm open={isOpens} setIsOpen={setIsOpens} />
       </section>
     </Context.Provider>
   );
