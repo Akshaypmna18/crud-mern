@@ -57,10 +57,7 @@ export default function Home() {
               name={name}
               price={price}
               quantity={quantity}
-              img={
-                image ||
-                "https://media.cheggcdn.com/media/8f8/8f8d8ae8-36b5-447e-947c-076618279a3d/php1KnYTm"
-              }
+              img={image}
             />
           );
         })}
