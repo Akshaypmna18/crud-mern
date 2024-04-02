@@ -6,8 +6,8 @@ const ProductSchema = mongoose.Schema(
       type: String,
       required: [true, "Product name is required"],
     },
-    quantity: { type: Number, required: true, default: 0 },
-    price: { type: Number, required: true, default: 0 },
+    quantity: { type: Number, required: true },
+    price: { type: Number, required: true },
     image: { type: String, required: true, unique: true },
   },
   { timestamps: true }
