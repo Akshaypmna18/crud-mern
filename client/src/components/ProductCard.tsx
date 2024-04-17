@@ -5,7 +5,7 @@ import { commonAPI } from "@/lib/services";
 import { useContext, useState } from "react";
 import { Context } from "@/context";
 import { Loader } from "./Loader";
-import { useToast } from "@/components/ui/use-toast";
+import useToastHook from '@/useToastHook'
 import deleteIcon from "@/assets/delete-icon.svg";
 import editIcon from "@/assets/edit-icon.svg";
 
@@ -22,7 +22,7 @@ export default function ProductCard({
   img: string;
   id: string;
 }) {
-  const { toast } = useToast();
+  const { showErrorToast,showSuccessToast } = useToastHook();
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingEd, setIsLoadingEd] = useState(false);
   const { refetchProducts, setIsOpen, setCurrentProduct } = useContext(Context);
@@ -30,19 +30,10 @@ export default function ProductCard({
     try {
       setIsLoading(true);
       await commonAPI(`/${id}`, "DELETE", id);
-      toast({
-        variant: "success",
-        title: "Product Deleted Successfully",
-        duration: 2500,
-      });
+      showSuccessToast("Product Deleted Successfully")
       refetchProducts();
     } catch (err: any) {
-      toast({
-        variant: "destructive",
-        title: "Ohoh Something went wrong",
-        description: err.message,
-        duration: 2500,
-      });
+      showErrorToast(err.message)
     } finally {
       setIsLoading(false);
     }
@@ -54,12 +45,7 @@ export default function ProductCard({
       setCurrentProduct(response.data);
       setIsOpen(true);
     } catch (err: any) {
-      toast({
-        variant: "destructive",
-        title: "Ohoh Something went wrong",
-        description: err.message,
-        duration: 2500,
-      });
+      showErrorToast(err.message)
     } finally {
       setIsLoadingEd(false);
     }
