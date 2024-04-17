@@ -7,7 +7,7 @@ function AddProduct() {
 
   return (
     <Button onClick={() => setIsOpens(true)} className="mx-auto mt-8 block">
-      AddProduct
+      Add Product
     </Button>
   );
 }

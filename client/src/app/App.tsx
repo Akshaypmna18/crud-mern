@@ -8,7 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import UpdateForm from "@/components/forms/updateForm";
 import AddForm from "@/components/forms/addForm";
 import AddProduct from "@/components/AddProduct";
-import { useToast } from "@/components/ui/use-toast";
+import useToastHook from '@/useToastHook'
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -16,18 +16,13 @@ export default function Home() {
   const [isOpens, setIsOpens] = useState(false);
   const [currentProduct, setCurrentProduct] = useState({});
   const [image, setImage] = useState();
-  const { toast } = useToast();
+  const { showErrorToast } = useToastHook();
   const fetchProducts = async () => {
     try {
       const response = await commonAPI();
       setProducts(response.data);
     } catch (err: any) {
-      toast({
-        variant: "destructive",
-        title: "Ohoh Something went wrong",
-        description: err.message,
-        duration: 2500,
-      });
+      showErrorToast(err.message)
     }
   };
   const refetchProducts = () => fetchProducts();

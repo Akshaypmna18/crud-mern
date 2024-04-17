@@ -21,11 +21,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { commonAPI } from "@/lib/services";
-import { useToast } from "@/components/ui/use-toast";
 import { Loader } from "@/components/Loader";
 import ImageUpload from "@/components/ImageUpload";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import useToastHook from '@/useToastHook'
 
 export type ModalProps = {
   open: boolean;
@@ -60,7 +60,7 @@ export default function UpdateForm({ open, setIsOpen }: ModalProps) {
   const { currentProduct, refetchProducts, image, setImage } =
     useContext(Context);
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
+  const { showErrorToast ,showSuccessToast} = useToastHook();
   const form = useForm({
     mode: "onChange",
     resolver: zodResolver(updateSchema),
@@ -75,19 +75,10 @@ export default function UpdateForm({ open, setIsOpen }: ModalProps) {
       };
       setIsLoading(true);
       await commonAPI(currentProduct._id, "PUT", validData);
-      toast({
-        variant: "success",
-        title: "Product Updated Successfully",
-        duration: 2500,
-      });
+      showSuccessToast("Product Updated Successfully");
       refetchProducts();
     } catch (err: any) {
-      toast({
-        variant: "destructive",
-        title: "Ohoh Something went wrong",
-        description: err.message,
-        duration: 2500,
-      });
+      showErrorToast(err.message)
     } finally {
       setIsLoading(false);
       setIsOpen(false);

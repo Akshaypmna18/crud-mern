@@ -82,7 +82,7 @@ export default function ProductCard({
         >
           {name}
         </CardItem>
-        <div className="flex justify-between mt-2 items-center px-8">
+        <div className="flex justify-between gap-x-2 mt-2 items-center px-8">
           <CardItem translateZ="20" className="text-lg">
             ₹ {price}
           </CardItem>

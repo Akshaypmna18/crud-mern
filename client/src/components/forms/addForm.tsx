@@ -11,35 +11,26 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { commonAPI } from "@/lib/services";
-import { useToast } from "@/components/ui/use-toast";
 import { useContext, useEffect, useState } from "react";
 import { ModalProps, updateSchema as addSchema } from "./updateForm";
 import { Context } from "@/context";
 import { Loader } from "@/components/Loader";
 import ImageUpload from "@/components/ImageUpload";
 import { zodResolver } from "@hookform/resolvers/zod";
+import useToastHook from '@/useToastHook'
 
 export default function AddForm({ open, setIsOpen }: ModalProps) {
   const { refetchProducts, image, setImage } = useContext(Context);
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
+  const { showErrorToast ,showSuccessToast} = useToastHook();
   const addProduct = async (data: any) => {
     try {
       setIsLoading(true);
       await commonAPI("", "POST", data);
-      toast({
-        variant: "success",
-        title: "Product Added Successfully",
-        duration: 2500,
-      });
+      showSuccessToast("Product Added Successfully");
       refetchProducts();
     } catch (err: any) {
-      toast({
-        variant: "destructive",
-        title: "Ohoh Something went wrong",
-        description: err.message,
-        duration: 2500,
-      });
+      showErrorToast(err.message)
     } finally {
       setIsLoading(false);
       setIsOpen(false);
