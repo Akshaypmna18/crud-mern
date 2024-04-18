@@ -9,8 +9,8 @@ export const commonAPI = async (
 ) => {
   const url = `${API_URL}/${endpoint}`;
   const config = {
-    // timeout: 5000,
-    // retry:1
+    timeout: 7500,
+    retry:1
   };
 
   switch (reqType) {
