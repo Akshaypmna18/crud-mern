@@ -8,7 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import UpdateForm from "@/components/forms/updateForm";
 import AddForm from "@/components/forms/addForm";
 import AddProduct from "@/components/AddProduct";
-import useToastHook from '@/useToastHook'
+import useToastHook from "@/useToastHook";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -22,7 +22,7 @@ export default function Home() {
       const response = await commonAPI();
       setProducts(response.data);
     } catch (err: any) {
-      showErrorToast(err.message)
+      showErrorToast(err.message);
     }
   };
   const refetchProducts = () => fetchProducts();
@@ -43,19 +43,21 @@ export default function Home() {
     >
       <Toaster />
       <AddProduct />
-      <section className="p-8 flex flex-wrap gap-4 justify-center items-center">
-        {products.map(({ _id, name, price, quantity, image }) => {
-          return (
-            <ProductCard
-              key={_id}
-              id={_id}
-              name={name}
-              price={price}
-              quantity={quantity}
-              img={image}
-            />
-          );
-        })}
+      <section className="p-8">
+        <div className="flex flex-wrap gap-4">
+          {products.map(({ _id, name, price, quantity, image }) => {
+            return (
+              <ProductCard
+                key={_id}
+                id={_id}
+                name={name}
+                price={price}
+                quantity={quantity}
+                img={image}
+              />
+            );
+          })}
+        </div>
         <UpdateForm open={isOpen} setIsOpen={setIsOpen} />
         <AddForm open={isOpens} setIsOpen={setIsOpens} />
       </section>
