@@ -51,7 +51,7 @@ export default function ProductCard({
     }
   };
   return (
-    <CardContainer className="w-[min(100%,20rem)]">
+    <CardContainer className="max-w-[20rem]">
       <CardBody className="bg-secondary relative group/card h-auto rounded-xl p-2 flex gap-x-2 items-center">
         <div className="max-w-[45%]">
           <CardItem translateZ="20">
@@ -59,7 +59,7 @@ export default function ProductCard({
               src={img}
               height="1000"
               width="1000"
-              className="object-cover rounded-xl aspect-square group-hover/card:shadow-xl"
+              className="object-cover rounded-xl aspect-square group-hover/card:shadow-xl min-w-[8rem]"
               alt="thumbnail"
             />
           </CardItem>

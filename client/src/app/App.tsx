@@ -42,9 +42,11 @@ export default function Home() {
       }}
     >
       <Toaster />
-      <AddProduct />
       <section className="p-8">
         <div className="flex flex-wrap gap-4">
+          <div className="grid place-items-center px-8">
+            <AddProduct />
+          </div>
           {products.map(({ _id, name, price, quantity, image }) => {
             return (
               <ProductCard
