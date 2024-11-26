@@ -26,7 +26,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use((req, res, next) => {
   const allowedOrigins = [
     "http://localhost:3000",
-    "https://aks-crud-mern.vercel.app","https://task-ten-smoky.vercel.app",
+    "http://localhost:5173",
+    "https://aks-crud-mern.vercel.app",
   ];
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
