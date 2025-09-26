@@ -150,7 +150,7 @@ export default function ProductCard({
                   <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                   <AlertDialogDescription>
                     This action cannot be undone. This will permanently delete
-                    the product "{name}" from your inventory.
+                    the product &quot;{name}&quot; from your inventory.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
