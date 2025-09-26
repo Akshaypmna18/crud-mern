@@ -1,4 +1,6 @@
 import { BoxIcon, RocketIcon, CubeIcon } from "@radix-ui/react-icons";
+import { useEffect, useState } from "react";
+import { commonAPI } from "../lib/services";
 
 interface KPICardProps {
   title: string;
@@ -39,38 +41,106 @@ function KPICard({ title, value, icon, trend }: KPICardProps) {
   );
 }
 
+interface KPIData {
+  totalProducts: number;
+  totalValue: number;
+  totalUnits: number;
+}
+
 export default function KPICards() {
-  // Dummy data - replace with real data from your API
-  const kpiData = [
-    {
-      title: "Total Products",
-      value: "1,247",
-      icon: <BoxIcon className="w-5 h-5 text-blue-600" />,
-      trend: { value: "12%", isPositive: true },
-    },
-    {
-      title: "Total Value",
-      value: "₹2.4M",
-      icon: <RocketIcon className="w-5 h-5 text-green-600" />,
-      trend: { value: "8%", isPositive: true },
-    },
-    {
-      title: "Total Units",
-      value: "15,892",
-      icon: <CubeIcon className="w-5 h-5 text-purple-600" />,
-      trend: { value: "3%", isPositive: false },
-    },
-  ];
+  const [kpiData, setKpiData] = useState<KPIData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchKPIs = async () => {
+      try {
+        setLoading(true);
+        const response = await commonAPI("kpi");
+        setKpiData(response.data);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching KPIs:", err);
+        setError("Failed to load KPI data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchKPIs();
+  }, []);
+
+  // Format number with commas
+  const formatNumber = (num: number): string => {
+    return num.toLocaleString();
+  };
+
+  // Format currency
+  const formatCurrency = (num: number): string => {
+    if (num >= 100000) {
+      return `₹${(num / 100000).toFixed(1)}L`;
+    } else if (num >= 1000) {
+      return `₹${(num / 1000).toFixed(1)}K`;
+    } else {
+      return `₹${num.toLocaleString()}`;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        {[1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-xl p-4 shadow-sm animate-pulse"
+          >
+            <div className="h-4 bg-gray-200 rounded mb-2"></div>
+            <div className="h-8 bg-gray-200 rounded mb-2"></div>
+            <div className="h-6 bg-gray-200 rounded w-16"></div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="col-span-full bg-red-50 border border-red-200 rounded-xl p-4">
+          <p className="text-red-600 text-center">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const kpiCards = kpiData
+    ? [
+        {
+          title: "Total Products",
+          value: formatNumber(kpiData.totalProducts),
+          icon: <BoxIcon className="w-5 h-5 text-blue-600" />,
+        },
+        {
+          title: "Total Value",
+          value: formatCurrency(kpiData.totalValue),
+          icon: <RocketIcon className="w-5 h-5 text-green-600" />,
+        },
+        {
+          title: "Total Units",
+          value: formatNumber(kpiData.totalUnits),
+          icon: <CubeIcon className="w-5 h-5 text-purple-600" />,
+        },
+      ]
+    : [];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-      {kpiData.map((kpi, index) => (
+      {kpiCards.map((kpi, index) => (
         <KPICard
           key={index}
           title={kpi.title}
           value={kpi.value}
           icon={kpi.icon}
-          trend={kpi.trend}
         />
       ))}
     </div>
