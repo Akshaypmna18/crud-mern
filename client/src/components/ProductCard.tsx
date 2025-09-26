@@ -25,12 +25,14 @@ export default function ProductCard({
   price = "0",
   img,
   id,
+  isPriority = false,
 }: {
   name: string;
   quantity: string;
   price: string;
   img: string;
   id: string;
+  isPriority?: boolean;
 }) {
   const { showErrorToast, showSuccessToast } = useToastHook();
   const [isLoading, setIsLoading] = useState(false);
@@ -83,7 +85,7 @@ export default function ProductCard({
             fill
             className="object-contain transition-transform duration-300 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            priority={false}
+            priority={isPriority}
           />
         </div>
 
