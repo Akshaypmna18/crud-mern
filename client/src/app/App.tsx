@@ -72,11 +72,14 @@ export default function Home() {
 
         <KPICards />
 
-        <div className="flex flex-wrap gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 justify-items-center">
           {isLoading
             ? // Skeleton loading for products
               Array.from({ length: 6 }).map((_, index) => (
-                <div key={index} className="group relative w-80">
+                <div
+                  key={index}
+                  className="group relative w-full max-w-80 mx-auto"
+                >
                   <div className="bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl shadow-lg overflow-hidden h-[280px] flex flex-col animate-pulse">
                     {/* Image skeleton */}
                     <div className="relative h-32 w-full bg-gray-200"></div>

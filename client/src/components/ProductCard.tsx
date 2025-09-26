@@ -76,7 +76,7 @@ export default function ProductCard({
   };
 
   return (
-    <div className="group relative w-80">
+    <div className="group relative w-full max-w-80 mx-auto">
       <div className="bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out hover:-translate-y-1 overflow-hidden h-[280px] flex flex-col">
         <div className="relative h-32 w-full overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
           <Image
