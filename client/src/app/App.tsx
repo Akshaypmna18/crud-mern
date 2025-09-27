@@ -4,7 +4,7 @@ import ProductCard from "@/components/ProductCard";
 import KPICards from "@/components/KPICards";
 import DatabaseToggle from "@/components/DatabaseToggle";
 import { commonAPI } from "@/lib/services";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { Context, Product, productToCardProps } from "@/context";
 import { Toaster } from "@/components/ui/toaster";
 import UpdateForm from "@/components/forms/updateForm";
@@ -26,15 +26,16 @@ export default function Home() {
     quantity: 0,
     image: "",
   });
-  const [image, setImage] = useState<string>("");
+  const [image, setImage] = useState<any[]>([]);
   const [currentDatabase, setCurrentDatabase] = useState<"mongodb" | "d1">(
     "mongodb"
   );
-  const fetchProducts = useCallback(async () => {
+
+  const fetchProducts = async () => {
     try {
       setIsLoading(true);
       const response = await commonAPI<Product[]>();
-      setProducts(response.data.data);
+      setProducts(response.data);
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error
@@ -44,9 +45,9 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
-  }, [showErrorToast]);
+  };
 
-  const refetchProducts = useCallback(() => fetchProducts(), [fetchProducts]);
+  const refetchProducts = () => fetchProducts();
 
   const handleDatabaseChange = (database: "mongodb" | "d1") => {
     setCurrentDatabase(database);
@@ -58,7 +59,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchProducts();
-  }, [fetchProducts]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Context.Provider
@@ -121,7 +122,7 @@ export default function Home() {
                   </div>
                 </div>
               ))
-            : products.map((product, index) => {
+            : products?.map((product, index) => {
                 const cardProps = productToCardProps(product);
                 return (
                   <ProductCard

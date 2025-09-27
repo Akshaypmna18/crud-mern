@@ -45,7 +45,7 @@ export default function AddForm({ open, setIsOpen }: ModalProps) {
       setIsLoading(false);
       setIsOpen(false);
       form.reset();
-      setImage("");
+      setImage([]);
     }
   };
 
@@ -57,8 +57,8 @@ export default function AddForm({ open, setIsOpen }: ModalProps) {
 
   const imageUrl = form.watch("image");
   useEffect(() => {
-    form.setValue("image", image);
-  }, [image, form]);
+    form.setValue("image", image?.[0]?.cdnUrl);
+  }, [image?.[0]?.cdnUrl]);
 
   return (
     <Dialog
@@ -66,7 +66,7 @@ export default function AddForm({ open, setIsOpen }: ModalProps) {
       onOpenChange={() => {
         setIsOpen(!open);
         form.reset();
-        setImage("");
+        setImage([]);
       }}
     >
       <DialogContent onInteractOutside={(e) => e.preventDefault()}>

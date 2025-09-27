@@ -63,7 +63,7 @@ export default function UpdateForm({ open, setIsOpen }: ModalProps) {
       setIsLoading(false);
       setIsOpen(false);
       form.reset();
-      setImage("");
+      setImage([]);
     }
   };
 
@@ -72,10 +72,10 @@ export default function UpdateForm({ open, setIsOpen }: ModalProps) {
   }, [image?.[0]?.cdnUrl]);
 
   useEffect(() => {
-    form.setValue("name", currentProduct.name);
-    form.setValue("image", currentProduct.image);
-    form.setValue("price", currentProduct.price);
-    form.setValue("quantity", currentProduct.quantity);
+    form.setValue("name", currentProduct?.name);
+    form.setValue("image", currentProduct?.image);
+    form.setValue("price", currentProduct?.price);
+    form.setValue("quantity", currentProduct?.quantity);
   }, [currentProduct]);
 
   return (
@@ -84,7 +84,7 @@ export default function UpdateForm({ open, setIsOpen }: ModalProps) {
       onOpenChange={() => {
         setIsOpen(!open);
         form.reset();
-        setImage("");
+        setImage([]);
       }}
     >
       <DialogContent

@@ -58,7 +58,7 @@ export default function ProductCard({
     try {
       setIsLoadingEd(true);
       const response = await commonAPI<Product>(`${id}`);
-      setCurrentProduct(response.data.data);
+      setCurrentProduct(response.data);
       setIsOpen(true);
     } catch (err: unknown) {
       const errorMessage =

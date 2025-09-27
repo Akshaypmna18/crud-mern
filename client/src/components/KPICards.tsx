@@ -12,7 +12,7 @@ export default function KPICards() {
       try {
         setLoading(true);
         const response = await commonAPI<KPIData>("kpi");
-        setKpiData(response.data.data as KPIData);
+        setKpiData(response.data as KPIData);
         setError(null);
       } catch (err) {
         console.error("Error fetching KPIs:", err);

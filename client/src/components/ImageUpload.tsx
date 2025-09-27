@@ -24,8 +24,7 @@ function ImageUpload() {
       const successFiles = event.detail.allEntries.filter(
         (file: UploadFile) => file.status === "success"
       );
-      const imageUrls = successFiles.map((file) => file.url);
-      setImage(imageUrls[0] || ""); // Set the first image URL or empty string
+      setImage(successFiles);
     };
 
     ctxProvider.addEventListener("change", handleChangeEvent);

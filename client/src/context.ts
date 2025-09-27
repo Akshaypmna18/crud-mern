@@ -24,6 +24,6 @@ export interface AppContextType {
   setCurrentProduct: (product: Product) => void;
   currentProduct: Product;
   setIsOpens: (isOpens: boolean) => void;
-  setImage: (image: string) => void;
-  image: string;
+  setImage: (image: any[]) => void;
+  image: any[];
 }
