@@ -20,6 +20,7 @@ export interface Product {
 
 export interface AppContextType {
   refetchProducts: () => void;
+  refetchKPI: () => void;
   setIsOpen: (isOpen: boolean) => void;
   setCurrentProduct: (product: Product) => void;
   currentProduct: Product;

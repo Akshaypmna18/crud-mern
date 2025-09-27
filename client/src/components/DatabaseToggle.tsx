@@ -5,7 +5,7 @@ export default function DatabaseToggle({
   currentDatabase,
 }: DatabaseToggleProps) {
   return (
-    <div className="flex items-center space-x-2 mb-6">
+    <div className="flex items-center space-x-2 mb-6 invisible">
       <span className="text-sm font-medium text-gray-700">Database:</span>
       <div className="flex bg-gray-100 rounded-lg p-1">
         <Button
