@@ -7,7 +7,9 @@ export default function KPICards({
   loading,
   error,
 }: {
-  kpiData: KPIData;
+  kpiData: KPIData | null;
+  loading: boolean;
+  error: string | null;
 }) {
   if (loading) {
     return (
