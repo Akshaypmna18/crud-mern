@@ -1,12 +1,12 @@
 import axios, { AxiosResponse } from "axios";
 import { API_URL } from "./utils";
-import { RequestType, Params, ApiResponse } from "./servicesTypes";
+import { RequestType, Params } from "./servicesTypes";
 
 export const commonAPI = async <T = unknown>(
   endpoint: string = "",
   reqType: RequestType = "GET",
   params: Params = {}
-): Promise<AxiosResponse<ApiResponse<T>>> => {
+): Promise<AxiosResponse<T>> => {
   const url = `${API_URL}/${endpoint}`;
   const config = {
     timeout: 7500,
@@ -15,12 +15,12 @@ export const commonAPI = async <T = unknown>(
 
   switch (reqType) {
     case "POST":
-      return await axios.post<ApiResponse<T>>(url, params, config);
+      return await axios.post<T>(url, params, config);
     case "PUT":
-      return await axios.put<ApiResponse<T>>(url, params, config);
+      return await axios.put<T>(url, params, config);
     case "DELETE":
-      return await axios.delete<ApiResponse<T>>(url, config);
+      return await axios.delete<T>(url, config);
     default:
-      return await axios.get<ApiResponse<T>>(url, config);
+      return await axios.get<T>(url, config);
   }
 };
