@@ -7,3 +7,9 @@ export type Params =
       image?: string;
     }
   | {};
+
+export interface ApiResponse<T = unknown> {
+  data: T;
+  message?: string;
+  success?: boolean;
+}
