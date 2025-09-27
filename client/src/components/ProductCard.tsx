@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { commonAPI } from "@/lib/services";
 import { useContext, useState } from "react";
-import { Context } from "@/context";
+import { Context, Product } from "@/context";
 import { Loader } from "./Loader";
 import useToastHook from "@/useToastHook";
 import deleteIcon from "@/assets/delete-icon.svg";
@@ -26,18 +26,16 @@ export default function ProductCard({
   img,
   id,
   isPriority = false,
-}: {
-  name: string;
-  quantity: string;
-  price: string;
-  img: string;
-  id: string;
-  isPriority?: boolean;
-}) {
+}: ProductCardProps) {
   const { showErrorToast, showSuccessToast } = useToastHook();
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingEd, setIsLoadingEd] = useState(false);
-  const { refetchProducts, setIsOpen, setCurrentProduct } = useContext(Context);
+
+  const context = useContext(Context);
+  if (!context) {
+    throw new Error("ProductCard must be used within a Context Provider");
+  }
+  const { refetchProducts, setIsOpen, setCurrentProduct } = context;
 
   const handleDelete = async (id: string) => {
     try {
@@ -45,8 +43,12 @@ export default function ProductCard({
       await commonAPI(`/${id}`, "DELETE", id);
       showSuccessToast("Product Deleted Successfully");
       refetchProducts();
-    } catch (err: any) {
-      showErrorToast(err.message);
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "An error occurred while deleting the product";
+      showErrorToast(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -55,17 +57,20 @@ export default function ProductCard({
   const handleEdit = async (id: string) => {
     try {
       setIsLoadingEd(true);
-      const response = await commonAPI(`${id}`);
-      setCurrentProduct(response.data);
+      const response = await commonAPI<Product>(`${id}`);
+      setCurrentProduct(response.data.data);
       setIsOpen(true);
-    } catch (err: any) {
-      showErrorToast(err.message);
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "An error occurred while fetching the product";
+      showErrorToast(errorMessage);
     } finally {
       setIsLoadingEd(false);
     }
   };
 
-  // Format price with proper currency formatting
   const formatPrice = (price: string) => {
     const numPrice = parseFloat(price);
     return new Intl.NumberFormat("en-IN", {
@@ -170,4 +175,13 @@ export default function ProductCard({
       </div>
     </div>
   );
+}
+
+interface ProductCardProps {
+  name: string;
+  quantity: string;
+  price: string;
+  img: string;
+  id: string;
+  isPriority?: boolean;
 }

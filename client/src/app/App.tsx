@@ -4,8 +4,8 @@ import ProductCard from "@/components/ProductCard";
 import KPICards from "@/components/KPICards";
 import DatabaseToggle from "@/components/DatabaseToggle";
 import { commonAPI } from "@/lib/services";
-import { useEffect, useState } from "react";
-import { Context } from "@/context";
+import { useEffect, useState, useCallback } from "react";
+import { Context, Product, productToCardProps } from "@/context";
 import { Toaster } from "@/components/ui/toaster";
 import UpdateForm from "@/components/forms/updateForm";
 import AddForm from "@/components/forms/addForm";
@@ -13,28 +13,40 @@ import AddProduct from "@/components/AddProduct";
 import useToastHook from "@/useToastHook";
 
 export default function Home() {
-  const [products, setProducts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isOpen, setIsOpen] = useState(false);
-  const [isOpens, setIsOpens] = useState(false);
-  const [currentProduct, setCurrentProduct] = useState({});
-  const [image, setImage] = useState();
+  const { showErrorToast } = useToastHook();
+
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpens, setIsOpens] = useState<boolean>(false);
+  const [currentProduct, setCurrentProduct] = useState<Product>({
+    _id: "",
+    name: "",
+    price: 0,
+    quantity: 0,
+    image: "",
+  });
+  const [image, setImage] = useState<string>("");
   const [currentDatabase, setCurrentDatabase] = useState<"mongodb" | "d1">(
     "mongodb"
   );
-  const { showErrorToast } = useToastHook();
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await commonAPI();
-      setProducts(response.data);
-    } catch (err: any) {
-      showErrorToast(err.message);
+      const response = await commonAPI<Product[]>();
+      setProducts(response.data.data);
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "An error occurred while fetching products";
+      showErrorToast(errorMessage);
     } finally {
       setIsLoading(false);
     }
-  };
-  const refetchProducts = () => fetchProducts();
+  }, [showErrorToast]);
+
+  const refetchProducts = useCallback(() => fetchProducts(), [fetchProducts]);
 
   const handleDatabaseChange = (database: "mongodb" | "d1") => {
     setCurrentDatabase(database);
@@ -46,7 +58,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [fetchProducts]);
 
   return (
     <Context.Provider
@@ -109,15 +121,12 @@ export default function Home() {
                   </div>
                 </div>
               ))
-            : products.map(({ _id, name, price, quantity, image }, index) => {
+            : products.map((product, index) => {
+                const cardProps = productToCardProps(product);
                 return (
                   <ProductCard
-                    key={_id}
-                    id={_id}
-                    name={name}
-                    price={price}
-                    quantity={quantity}
-                    img={image}
+                    key={product._id}
+                    {...cardProps}
                     isPriority={index < 3} // Prioritize first 3 images for LCP
                   />
                 );

@@ -4,7 +4,11 @@ import { Context } from "@/context";
 import { PlusIcon } from "@radix-ui/react-icons";
 
 function AddProduct() {
-  const { setIsOpens } = useContext(Context);
+  const context = useContext(Context);
+  if (!context) {
+    throw new Error("AddProduct must be used within a Context Provider");
+  }
+  const { setIsOpens } = context;
 
   return (
     <Button

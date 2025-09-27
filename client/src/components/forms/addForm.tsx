@@ -17,49 +17,56 @@ import { Context } from "@/context";
 import { Loader } from "@/components/Loader";
 import ImageUpload from "@/components/ImageUpload";
 import { zodResolver } from "@hookform/resolvers/zod";
-import useToastHook from '@/useToastHook'
+import { z } from "zod";
+import useToastHook from "@/useToastHook";
 
 export default function AddForm({ open, setIsOpen }: ModalProps) {
-  const { refetchProducts, image, setImage } = useContext(Context);
+  const context = useContext(Context);
+  if (!context) {
+    throw new Error("AddForm must be used within a Context Provider");
+  }
+  const { refetchProducts, image, setImage } = context;
   const [isLoading, setIsLoading] = useState(false);
-  const { showErrorToast ,showSuccessToast} = useToastHook();
+
+  const { showErrorToast, showSuccessToast } = useToastHook();
   const addProduct = async (data: any) => {
     try {
       setIsLoading(true);
       await commonAPI("", "POST", data);
       showSuccessToast("Product Added Successfully");
       refetchProducts();
-    } catch (err: any) {
-      showErrorToast(err.message)
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "An error occurred while adding the product";
+      showErrorToast(errorMessage);
     } finally {
       setIsLoading(false);
       setIsOpen(false);
       form.reset();
-      setImage(undefined);
+      setImage("");
     }
   };
-  const defaultValues = {
-    name: "",
-    price: "",
-    quantity: "",
-    image: "",
-  };
+
   const form = useForm({
     defaultValues,
     resolver: zodResolver(addSchema),
     mode: "onChange",
   });
+
   const imageUrl = form.watch("image");
   useEffect(() => {
-    form.setValue("image", image?.[0]?.cdnUrl);
-  }, [image?.[0]?.cdnUrl]);
+    form.setValue("image", image);
+  }, [image, form]);
+
   return (
     <Dialog
       open={open}
       onOpenChange={() => {
         setIsOpen(!open);
         form.reset();
-        setImage(undefined);
+        setImage("");
       }}
     >
       <DialogContent onInteractOutside={(e) => e.preventDefault()}>
@@ -160,3 +167,10 @@ export default function AddForm({ open, setIsOpen }: ModalProps) {
     </Dialog>
   );
 }
+
+const defaultValues = {
+  name: "",
+  price: "",
+  quantity: "",
+  image: "",
+};

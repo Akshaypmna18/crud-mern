@@ -25,42 +25,18 @@ import { Loader } from "@/components/Loader";
 import ImageUpload from "@/components/ImageUpload";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import useToastHook from '@/useToastHook'
-
-export type ModalProps = {
-  open: boolean;
-  setIsOpen: Dispatch<SetStateAction<boolean>>;
-};
-
-export const updateSchema = z.object({
-  name: z
-    .string()
-    .min(3, "Name must be at least 3 characters long")
-    .max(50, "Name cannot exceed 50 characters"),
-  price: z.coerce
-    .number({
-      required_error: "Price is required",
-      invalid_type_error: "Price must be a number",
-    })
-    .gte(0, "Price must be greater than or equal to 0"),
-  quantity: z.coerce
-    .number({
-      required_error: "Quantity is required",
-      invalid_type_error: "Quantity must be a number",
-    })
-    .gte(0, "Quantity must be greater than or equal to 0"),
-  image: z
-    .string({
-      required_error: "URL is required",
-    })
-    .url("Image must be a valid URL"),
-});
+import useToastHook from "@/useToastHook";
 
 export default function UpdateForm({ open, setIsOpen }: ModalProps) {
-  const { currentProduct, refetchProducts, image, setImage } =
-    useContext(Context);
+  const context = useContext(Context);
+  if (!context) {
+    throw new Error("UpdateForm must be used within a Context Provider");
+  }
+  const { currentProduct, refetchProducts, image, setImage } = context;
+
   const [isLoading, setIsLoading] = useState(false);
-  const { showErrorToast ,showSuccessToast} = useToastHook();
+
+  const { showErrorToast, showSuccessToast } = useToastHook();
   const form = useForm({
     mode: "onChange",
     resolver: zodResolver(updateSchema),
@@ -77,31 +53,38 @@ export default function UpdateForm({ open, setIsOpen }: ModalProps) {
       await commonAPI(currentProduct._id, "PUT", validData);
       showSuccessToast("Product Updated Successfully");
       refetchProducts();
-    } catch (err: any) {
-      showErrorToast(err.message)
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "An error occurred while updating the product";
+      showErrorToast(errorMessage);
     } finally {
       setIsLoading(false);
       setIsOpen(false);
       form.reset();
-      setImage(undefined);
+      setImage("");
     }
   };
+
   useEffect(() => {
     form.setValue("image", image?.[0]?.cdnUrl);
   }, [image?.[0]?.cdnUrl]);
+
   useEffect(() => {
     form.setValue("name", currentProduct.name);
     form.setValue("image", currentProduct.image);
     form.setValue("price", currentProduct.price);
     form.setValue("quantity", currentProduct.quantity);
   }, [currentProduct]);
+
   return (
     <Dialog
       open={open}
       onOpenChange={() => {
         setIsOpen(!open);
         form.reset();
-        setImage(undefined);
+        setImage("");
       }}
     >
       <DialogContent
@@ -197,3 +180,32 @@ export default function UpdateForm({ open, setIsOpen }: ModalProps) {
     </Dialog>
   );
 }
+
+export type ModalProps = {
+  open: boolean;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+};
+
+export const updateSchema = z.object({
+  name: z
+    .string()
+    .min(3, "Name must be at least 3 characters long")
+    .max(50, "Name cannot exceed 50 characters"),
+  price: z.coerce
+    .number({
+      required_error: "Price is required",
+      invalid_type_error: "Price must be a number",
+    })
+    .gte(0, "Price must be greater than or equal to 0"),
+  quantity: z.coerce
+    .number({
+      required_error: "Quantity is required",
+      invalid_type_error: "Quantity must be a number",
+    })
+    .gte(0, "Quantity must be greater than or equal to 0"),
+  image: z
+    .string({
+      required_error: "URL is required",
+    })
+    .url("Image must be a valid URL"),
+});

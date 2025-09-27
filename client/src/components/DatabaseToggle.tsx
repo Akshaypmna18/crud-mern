@@ -1,10 +1,4 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-
-interface DatabaseToggleProps {
-  onDatabaseChange: (database: "mongodb" | "d1") => void;
-  currentDatabase: "mongodb" | "d1";
-}
 
 export default function DatabaseToggle({
   onDatabaseChange,
@@ -41,4 +35,9 @@ export default function DatabaseToggle({
       </div>
     </div>
   );
+}
+
+interface DatabaseToggleProps {
+  onDatabaseChange: (database: "mongodb" | "d1") => void;
+  currentDatabase: "mongodb" | "d1";
 }

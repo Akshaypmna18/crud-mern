@@ -9,19 +9,23 @@ import { Context } from "@/context";
 LR.registerBlocks(LR);
 
 function ImageUpload() {
-  const { setImage } = useContext(Context);
-  const ctxProviderRef = useRef(null);
+  const context = useContext(Context);
+  if (!context) {
+    throw new Error("ImageUpload must be used within a Context Provider");
+  }
+  const { setImage } = context;
+  const ctxProviderRef = useRef<any>(null);
 
   useEffect(() => {
-    const ctxProvider: any = ctxProviderRef.current;
+    const ctxProvider = ctxProviderRef.current;
     if (!ctxProvider) return;
 
-    const handleChangeEvent = (event: any) => {
-      setImage([
-        ...event.detail.allEntries.filter(
-          (file: any) => file.status === "success"
-        ),
-      ]);
+    const handleChangeEvent = (event: UploadEvent) => {
+      const successFiles = event.detail.allEntries.filter(
+        (file: UploadFile) => file.status === "success"
+      );
+      const imageUrls = successFiles.map((file) => file.url);
+      setImage(imageUrls[0] || ""); // Set the first image URL or empty string
     };
 
     ctxProvider.addEventListener("change", handleChangeEvent);
@@ -29,7 +33,7 @@ function ImageUpload() {
     return () => {
       ctxProvider.removeEventListener("change", handleChangeEvent);
     };
-  }, []);
+  }, [setImage]);
 
   return (
     <div>
@@ -51,3 +55,15 @@ function ImageUpload() {
 }
 
 export default ImageUpload;
+
+interface UploadFile {
+  status: string;
+  uuid: string;
+  url: string;
+}
+
+interface UploadEvent {
+  detail: {
+    allEntries: UploadFile[];
+  };
+}
