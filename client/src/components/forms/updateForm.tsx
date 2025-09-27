@@ -32,7 +32,8 @@ export default function UpdateForm({ open, setIsOpen }: ModalProps) {
   if (!context) {
     throw new Error("UpdateForm must be used within a Context Provider");
   }
-  const { currentProduct, refetchProducts, image, setImage } = context;
+  const { currentProduct, refetchProducts, image, setImage, refetchKPI } =
+    context;
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -53,6 +54,7 @@ export default function UpdateForm({ open, setIsOpen }: ModalProps) {
       await commonAPI(currentProduct._id, "PUT", validData);
       showSuccessToast("Product Updated Successfully");
       refetchProducts();
+      refetchKPI();
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error

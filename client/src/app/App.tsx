@@ -30,6 +30,9 @@ export default function Home() {
   const [currentDatabase, setCurrentDatabase] = useState<"mongodb" | "d1">(
     "mongodb"
   );
+  const [kpiData, setKpiData] = useState<KPIData | null>(null);
+  const [kpiLoading, setKpiLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchProducts = async () => {
     try {
@@ -46,8 +49,22 @@ export default function Home() {
       setIsLoading(false);
     }
   };
+  const fetchKPIs = async () => {
+    try {
+      setKpiLoading(true);
+      const response = await commonAPI<KPIData>("kpi");
+      setKpiData(response.data as KPIData);
+      setError(null);
+    } catch (err) {
+      console.error("Error fetching KPIs:", err);
+      setError("Failed to load KPI data");
+    } finally {
+      setKpiLoading(false);
+    }
+  };
 
   const refetchProducts = () => fetchProducts();
+  const refetchKPI = () => fetchKPIs();
 
   const handleDatabaseChange = (database: "mongodb" | "d1") => {
     setCurrentDatabase(database);
@@ -59,12 +76,14 @@ export default function Home() {
 
   useEffect(() => {
     fetchProducts();
+    fetchKPIs();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Context.Provider
       value={{
         refetchProducts,
+        refetchKPI,
         setIsOpen,
         setCurrentProduct,
         currentProduct,
@@ -83,7 +102,7 @@ export default function Home() {
           <AddProduct />
         </div>
 
-        <KPICards />
+        <KPICards kpiData={kpiData} loading={kpiLoading} error={error} />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 justify-items-center">
           {isLoading
@@ -138,4 +157,10 @@ export default function Home() {
       </section>
     </Context.Provider>
   );
+}
+
+interface KPIData {
+  totalProducts: number;
+  totalValue: number;
+  totalUnits: number;
 }

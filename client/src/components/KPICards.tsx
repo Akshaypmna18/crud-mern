@@ -2,29 +2,13 @@ import { BoxIcon, RocketIcon, CubeIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { commonAPI } from "../lib/services";
 
-export default function KPICards() {
-  const [kpiData, setKpiData] = useState<KPIData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchKPIs = async () => {
-      try {
-        setLoading(true);
-        const response = await commonAPI<KPIData>("kpi");
-        setKpiData(response.data as KPIData);
-        setError(null);
-      } catch (err) {
-        console.error("Error fetching KPIs:", err);
-        setError("Failed to load KPI data");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchKPIs();
-  }, []);
-
+export default function KPICards({
+  kpiData,
+  loading,
+  error,
+}: {
+  kpiData: KPIData;
+}) {
   if (loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">

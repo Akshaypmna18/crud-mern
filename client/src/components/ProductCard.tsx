@@ -35,7 +35,7 @@ export default function ProductCard({
   if (!context) {
     throw new Error("ProductCard must be used within a Context Provider");
   }
-  const { refetchProducts, setIsOpen, setCurrentProduct } = context;
+  const { refetchProducts, setIsOpen, setCurrentProduct, refetchKPI } = context;
 
   const handleDelete = async (id: string) => {
     try {
@@ -43,6 +43,7 @@ export default function ProductCard({
       await commonAPI(`/${id}`, "DELETE", id);
       showSuccessToast("Product Deleted Successfully");
       refetchProducts();
+      refetchKPI();
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error

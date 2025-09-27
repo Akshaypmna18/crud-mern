@@ -25,7 +25,7 @@ export default function AddForm({ open, setIsOpen }: ModalProps) {
   if (!context) {
     throw new Error("AddForm must be used within a Context Provider");
   }
-  const { refetchProducts, image, setImage } = context;
+  const { refetchProducts, image, setImage, refetchKPI } = context;
   const [isLoading, setIsLoading] = useState(false);
 
   const { showErrorToast, showSuccessToast } = useToastHook();
@@ -35,6 +35,7 @@ export default function AddForm({ open, setIsOpen }: ModalProps) {
       await commonAPI("", "POST", data);
       showSuccessToast("Product Added Successfully");
       refetchProducts();
+      refetchKPI();
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error
