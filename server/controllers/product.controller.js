@@ -1,18 +1,58 @@
 const Product = require("../models/product.model.js");
-
 const getProducts = async (req, res) => {
   try {
-    const products = await Product.find({}).lean();
-    if (!products || products.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "No products found",
-      });
+    // Pagination parameters
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const sortBy = req.query.sortBy || "createdAt";
+    const sortOrder = req.query.sortOrder === "asc" ? 1 : -1;
+    const search = req.query.search || "";
+
+    // Calculate skip value for pagination
+    const skip = (page - 1) * limit;
+
+    // Build query object
+    const query = {};
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { image: { $regex: search, $options: "i" } },
+      ];
     }
+
+    // Build sort object
+    const sort = {};
+    sort[sortBy] = sortOrder;
+
+    // Execute query with pagination
+    const [products, totalCount] = await Promise.all([
+      Product.find(query).sort(sort).skip(skip).limit(limit).lean(),
+      Product.countDocuments(query),
+    ]);
+
+    // Calculate pagination info
+    const totalPages = Math.ceil(totalCount / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
     res.status(200).json({
       success: true,
-      count: products.length,
       data: products,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalCount,
+        limit,
+        hasNextPage,
+        hasPrevPage,
+        nextPage: hasNextPage ? page + 1 : null,
+        prevPage: hasPrevPage ? page - 1 : null,
+      },
+      filters: {
+        search,
+        sortBy,
+        sortOrder,
+      },
     });
   } catch (err) {
     console.error("Error fetching products:", err);

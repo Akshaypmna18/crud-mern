@@ -3,13 +3,18 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
+const compression = require("compression");
 require("dotenv").config();
 
 const ProductRoutes = require("./routes/product.route.js");
+const { cacheMiddleware } = require("./middleware/cache.js");
 
 const app = express();
 
 app.use(helmet());
+
+// Compression middleware (should be early in the stack)
+app.use(compression());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -44,7 +49,13 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(process.env.MONGO_URI, {
+      maxPoolSize: 10, // Maintain up to 10 socket connections
+      serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
+      socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+      bufferCommands: false, // Disable mongoose buffering
+      bufferMaxEntries: 0, // Disable mongoose buffering
+    });
     console.log("✅ Connected to MongoDB!");
   } catch (error) {
     console.error("❌ Database connection failed:", error.message);
