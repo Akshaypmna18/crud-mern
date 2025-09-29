@@ -8,6 +8,9 @@ require("dotenv").config();
 
 const ProductRoutes = require("./routes/product.route.js");
 const { cacheMiddleware } = require("./middleware/cache.js");
+const { errorHandler } = require("./middleware/errorHandler");
+const requestLogger = require("./middleware/requestLogger");
+const logger = require("./utils/logger");
 
 const app = express();
 
@@ -15,6 +18,9 @@ app.use(helmet());
 
 // Compression middleware (should be early in the stack)
 app.use(compression());
+
+app.use(logger.addRequestId);
+app.use(requestLogger);
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -65,32 +71,35 @@ const connectDB = async () => {
 
 connectDB();
 
-app.use("/products", ProductRoutes);
+// Routes with caching
+app.use("/products", cacheMiddleware(300), ProductRoutes);
 
+// Health check endpoint
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "OK",
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
+    memory: process.memoryUsage(),
+    version: process.version,
+    requestId: req.requestId,
   });
 });
 
+// 404 handler
 app.use("*", (req, res) => {
-  res.status(404).json({ message: "Route not found" });
-});
-
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
-    message:
-      process.env.NODE_ENV === "production"
-        ? "Something went wrong!"
-        : err.message,
+  res.status(404).json({
+    success: false,
+    message: "Route not found",
+    requestId: req.requestId,
   });
 });
+
+// Global error handler (must be last)
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  logger.info(`🚀 Server running on port ${PORT}`);
 });
