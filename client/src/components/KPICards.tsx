@@ -102,7 +102,7 @@ function KPICard({ title, value, icon, trend }: KPICardProps) {
 }
 
 const formatNumber = (num: number): string => {
-  return num.toLocaleString();
+  return num?.toLocaleString();
 };
 
 const formatCurrency = (num: number): string => {

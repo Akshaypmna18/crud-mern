@@ -1,6 +1,6 @@
 const Product = require("../models/product.model.js");
 const { NotFoundError, DatabaseError } = require("../utils/AppError");
-const { catchAsync } = require("../middleware/errorHandler");
+const { catchAsync } = require("../utils/errorHandler");
 const logger = require("../utils/logger");
 
 const getProducts = catchAsync(async (req, res) => {

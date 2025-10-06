@@ -8,8 +8,8 @@ require("dotenv").config();
 
 const ProductRoutes = require("./routes/product.route.js");
 const { cacheMiddleware } = require("./middleware/cache.js");
-const { errorHandler } = require("./middleware/errorHandler");
-const requestLogger = require("./middleware/requestLogger");
+const { errorHandler } = require("./utils/errorHandler");
+const requestLogger = require("./utils/requestLogger");
 const logger = require("./utils/logger");
 const { swaggerUi, specs } = require("./docs/swagger.js");
 
@@ -67,17 +67,32 @@ app.use(
 
 const connectDB = async () => {
   try {
+    if (!process.env.MONGO_URI) {
+      console.log("⚠️  MONGO_URI not found in environment variables");
+      console.log(
+        "📝 Please create a .env file with your MongoDB connection string"
+      );
+      console.log("📝 Example: MONGO_URI=mongodb://localhost:27017/crud-mern");
+      console.log(
+        "📝 The server will continue without database connection for testing"
+      );
+      return;
+    }
+
     await mongoose.connect(process.env.MONGO_URI, {
       maxPoolSize: 10, // Maintain up to 10 socket connections
-      serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
-      socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
-      bufferCommands: false, // Disable mongoose buffering
-      bufferMaxEntries: 0, // Disable mongoose buffering
+      serverSelectionTimeoutMS: 2000, // Reduced from 5s to 2s for faster failures
+      socketTimeoutMS: 30000, // Reduced from 45s to 30s
+      bufferCommands: true, // Enable buffering for better performance
+      connectTimeoutMS: 10000, // 10 second connection timeout
     });
     console.log("✅ Connected to MongoDB!");
   } catch (error) {
     console.error("❌ Database connection failed:", error.message);
-    process.exit(1);
+    console.log("📝 Please check your MongoDB connection string in .env file");
+    console.log(
+      "📝 The server will continue without database connection for testing"
+    );
   }
 };
 
@@ -95,6 +110,28 @@ app.get("/health", (req, res) => {
     memory: process.memoryUsage(),
     version: process.version,
     requestId: req.requestId,
+  });
+});
+
+// Cache status endpoint (for debugging)
+app.get("/cache-status", (req, res) => {
+  const { cache } = require("./middleware/cache.js");
+  const keys = cache.keys();
+  const cacheData = {};
+
+  keys.forEach((key) => {
+    const data = cache.get(key);
+    cacheData[key] = {
+      exists: !!data,
+      timestamp: data?.cacheTimestamp || "unknown",
+      ttl: cache.getTtl(key) || "unknown",
+    };
+  });
+
+  res.status(200).json({
+    cacheKeys: keys,
+    cacheData,
+    totalKeys: keys.length,
   });
 });
 

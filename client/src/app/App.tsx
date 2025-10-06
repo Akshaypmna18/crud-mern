@@ -37,8 +37,16 @@ export default function Home() {
   const fetchProducts = async () => {
     try {
       setIsLoading(true);
-      const response = await commonAPI<Product[]>();
-      setProducts(response.data);
+      const response = await commonAPI<{
+        success: boolean;
+        data: Product[];
+        pagination: any;
+      }>();
+      if (response.data.success) {
+        setProducts(response.data.data);
+      } else {
+        throw new Error("Failed to fetch products");
+      }
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error
@@ -52,9 +60,17 @@ export default function Home() {
   const fetchKPIs = async () => {
     try {
       setKpiLoading(true);
-      const response = await commonAPI<KPIData>("kpi");
-      setKpiData(response.data as KPIData);
-      setError(null);
+      const response = await commonAPI<{
+        success: boolean;
+        data: KPIData;
+        generatedAt: string;
+      }>("kpi");
+      if (response.data.success) {
+        setKpiData(response.data.data);
+        setError(null);
+      } else {
+        throw new Error("Failed to fetch KPI data");
+      }
     } catch (err) {
       console.error("Error fetching KPIs:", err);
       setError("Failed to load KPI data");
@@ -163,4 +179,6 @@ interface KPIData {
   totalProducts: number;
   totalValue: number;
   totalUnits: number;
+  averagePrice: number;
+  averageQuantity: number;
 }

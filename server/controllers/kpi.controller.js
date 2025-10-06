@@ -1,5 +1,5 @@
 const Product = require("../models/product.model.js");
-const { catchAsync } = require("../middleware/errorHandler");
+const { catchAsync } = require("../utils/errorHandler");
 
 const getKPIs = catchAsync(async (req, res) => {
   const kpiData = await Product.aggregate([

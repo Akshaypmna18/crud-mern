@@ -58,9 +58,17 @@ export default function ProductCard({
   const handleEdit = async (id: string) => {
     try {
       setIsLoadingEd(true);
-      const response = await commonAPI<Product>(`${id}`);
-      setCurrentProduct(response.data);
-      setIsOpen(true);
+      const response = await commonAPI<{
+        success: boolean;
+        data: Product;
+      }>(`${id}`);
+
+      if (response.data.success) {
+        setCurrentProduct(response.data.data);
+        setIsOpen(true);
+      } else {
+        throw new Error("Failed to fetch product");
+      }
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error

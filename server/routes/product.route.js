@@ -13,7 +13,7 @@ const {
   validateObjectId,
   handleValidationErrors,
 } = require("../middleware/validation.js");
-const { clearCache } = require("../middleware/cache.js");
+const { clearCacheForWrite } = require("../middleware/cache.js");
 
 const router = express.Router();
 
@@ -247,7 +247,7 @@ router.post(
   "/",
   validateProduct,
   handleValidationErrors,
-  clearCache,
+  clearCacheForWrite(), // Clear cache after successful creation
   createProduct
 );
 
@@ -319,7 +319,7 @@ router.put(
   validateObjectId,
   validateProductUpdate,
   handleValidationErrors,
-  clearCache,
+  clearCacheForWrite(), // Clear cache after successful update
   updateProduct
 );
 
@@ -362,7 +362,359 @@ router.delete(
   "/:id",
   validateObjectId,
   handleValidationErrors,
-  clearCache,
+  clearCacheForWrite(), // Clear cache after successful deletion
+  deleteProduct
+);
+
+module.exports = router;
+
+/**
+
+ * @swagger
+
+ * /products:
+
+ *   post:
+
+ *     summary: Create a new product
+
+ *     tags: [Products]
+
+ *     requestBody:
+
+ *       required: true
+
+ *       content:
+
+ *         application/json:
+
+ *           schema:
+
+ *             type: object
+
+ *             required: [name, quantity, price, image]
+
+ *             properties:
+
+ *               name:
+
+ *                 type: string
+
+ *                 minLength: 2
+
+ *                 maxLength: 100
+
+ *                 example: iPhone 15 Pro
+
+ *               quantity:
+
+ *                 type: integer
+
+ *                 minimum: 0
+
+ *                 maximum: 10000
+
+ *                 example: 50
+
+ *               price:
+
+ *                 type: number
+
+ *                 minimum: 0
+
+ *                 maximum: 999999.99
+
+ *                 example: 999.99
+
+ *               image:
+
+ *                 type: string
+
+ *                 format: uri
+
+ *                 example: https://example.com/image.jpg
+
+ *     responses:
+
+ *       201:
+
+ *         description: Product created successfully
+
+ *         content:
+
+ *           application/json:
+
+ *             schema:
+
+ *               type: object
+
+ *               properties:
+
+ *                 success:
+
+ *                   type: boolean
+
+ *                   example: true
+
+ *                 message:
+
+ *                   type: string
+
+ *                   example: Product created successfully
+
+ *                 data:
+
+ *                   $ref: '#/components/schemas/Product'
+
+ *       400:
+
+ *         description: Validation error
+
+ *         content:
+
+ *           application/json:
+
+ *             schema:
+
+ *               $ref: '#/components/schemas/Error'
+
+ *       500:
+
+ *         description: Internal server error
+
+ */
+
+router.post(
+  "/",
+
+  validateProduct,
+
+  handleValidationErrors,
+
+  clearCacheForWrite(),
+
+  createProduct
+);
+
+/**
+
+ * @swagger
+
+ * /products/{id}:
+
+ *   put:
+
+ *     summary: Update a product by ID
+
+ *     tags: [Products]
+
+ *     parameters:
+
+ *       - in: path
+
+ *         name: id
+
+ *         required: true
+
+ *         schema:
+
+ *           type: string
+
+ *           pattern: '^[0-9a-fA-F]{24}$'
+
+ *         description: Product ID
+
+ *     requestBody:
+
+ *       required: true
+
+ *       content:
+
+ *         application/json:
+
+ *           schema:
+
+ *             type: object
+
+ *             properties:
+
+ *               name:
+
+ *                 type: string
+
+ *                 minLength: 2
+
+ *                 maxLength: 100
+
+ *                 example: iPhone 15 Pro Max
+
+ *               quantity:
+
+ *                 type: integer
+
+ *                 minimum: 0
+
+ *                 maximum: 10000
+
+ *                 example: 25
+
+ *               price:
+
+ *                 type: number
+
+ *                 minimum: 0
+
+ *                 maximum: 999999.99
+
+ *                 example: 1199.99
+
+ *               image:
+
+ *                 type: string
+
+ *                 format: uri
+
+ *                 example: https://example.com/new-image.jpg
+
+ *     responses:
+
+ *       200:
+
+ *         description: Product updated successfully
+
+ *         content:
+
+ *           application/json:
+
+ *             schema:
+
+ *               type: object
+
+ *               properties:
+
+ *                 success:
+
+ *                   type: boolean
+
+ *                   example: true
+
+ *                 message:
+
+ *                   type: string
+
+ *                   example: Product updated successfully
+
+ *                 data:
+
+ *                   $ref: '#/components/schemas/Product'
+
+ *       404:
+
+ *         description: Product not found
+
+ *       400:
+
+ *         description: Validation error
+
+ *       500:
+
+ *         description: Internal server error
+
+ */
+
+router.put(
+  "/:id",
+
+  validateObjectId,
+
+  validateProductUpdate,
+
+  handleValidationErrors,
+
+  clearCacheForWrite(),
+
+  updateProduct
+);
+
+/**
+
+ * @swagger
+
+ * /products/{id}:
+
+ *   delete:
+
+ *     summary: Delete a product by ID
+
+ *     tags: [Products]
+
+ *     parameters:
+
+ *       - in: path
+
+ *         name: id
+
+ *         required: true
+
+ *         schema:
+
+ *           type: string
+
+ *           pattern: '^[0-9a-fA-F]{24}$'
+
+ *         description: Product ID
+
+ *     responses:
+
+ *       200:
+
+ *         description: Product deleted successfully
+
+ *         content:
+
+ *           application/json:
+
+ *             schema:
+
+ *               type: object
+
+ *               properties:
+
+ *                 success:
+
+ *                   type: boolean
+
+ *                   example: true
+
+ *                 message:
+
+ *                   type: string
+
+ *                   example: Product deleted successfully
+
+ *       404:
+
+ *         description: Product not found
+
+ *       400:
+
+ *         description: Invalid product ID
+
+ *       500:
+
+ *         description: Internal server error
+
+ */
+
+router.delete(
+  "/:id",
+
+  validateObjectId,
+
+  handleValidationErrors,
+
+  clearCacheForWrite(),
+
   deleteProduct
 );
 

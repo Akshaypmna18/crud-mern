@@ -26,10 +26,33 @@ const ProductSchema = mongoose.Schema(
       required: [true, "Image URL is required"],
       validate: {
         validator: function (v) {
-          return /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i.test(v);
+          // Very flexible validation - accepts any HTTPS URL that looks like an image
+          // Either ends with image extension OR is from any image hosting service
+          const url = v;
+
+          // Test 1: URLs ending with image extensions
+          if (/^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i.test(url)) {
+            return true;
+          }
+
+          // Test 2: URLs from known image hosting services
+          if (
+            /^https?:\/\/(ucarecdn\.com|images\.unsplash\.com|picsum\.photos|via\.placeholder\.com|imgur\.com|cloudinary\.com|amazonaws\.com|cdn\.|images\.|img\.|static\.)/i.test(
+              url
+            )
+          ) {
+            return true;
+          }
+
+          // Test 3: UUID-like patterns common in CDNs (like your ucarecdn URLs)
+          if (/^https?:\/\/[^\/]+\/[a-f0-9\-]+\/?$/i.test(url)) {
+            return true;
+          }
+
+          return false;
         },
         message:
-          "Image must be a valid URL ending with .jpg, .jpeg, .png, .gif, or .webp",
+          "Image must be a valid URL from a recognized image hosting service or end with .jpg, .jpeg, .png, .gif, or .webp",
       },
     },
   },
@@ -44,6 +67,8 @@ const ProductSchema = mongoose.Schema(
 ProductSchema.index({ name: 1 });
 ProductSchema.index({ price: 1 });
 ProductSchema.index({ createdAt: -1 });
+// Compound index for KPI aggregation performance
+ProductSchema.index({ price: 1, quantity: 1 });
 
 // Virtual for total value
 ProductSchema.virtual("totalValue").get(function () {

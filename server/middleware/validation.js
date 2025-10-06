@@ -17,11 +17,7 @@ const validateProduct = [
     .isFloat({ min: 0, max: 999999.99 })
     .withMessage("Price must be a positive number between 0 and 999999.99"),
 
-  body("image")
-    .isURL()
-    .withMessage("Image must be a valid URL")
-    .trim()
-    .escape(),
+  body("image").isURL().withMessage("Image must be a valid URL").trim(),
 ];
 
 // Validation rules for product updates
@@ -47,8 +43,7 @@ const validateProductUpdate = [
     .optional()
     .isURL()
     .withMessage("Image must be a valid URL")
-    .trim()
-    .escape(),
+    .trim(),
 ];
 
 // Validation for MongoDB ObjectId
